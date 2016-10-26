@@ -20,3 +20,22 @@
 #if defined(DEVICE_TRNG)
 #define MBEDTLS_ENTROPY_HARDWARE_ALT
 #endif
+
+#if defined(DEVICE_STORAGE)
+
+#include "cfstore_config.h"
+#include "configuration_store.h"
+
+#if defined(CFSTORE_STORAGE_DISABLE) && (CFSTORE_STORAGE_DISABLE == 0) && \
+    defined(CFSTORE_CONFIG_BACKEND_FLASH_ENABLED)
+
+#define MBEDTLS_ENTROPY_NV_SEED
+#define MBEDTLS_PLATFORM_NV_SEED_READ_MACRO     mbedtls_nv_seed_read
+#define MBEDTLS_PLATFORM_NV_SEED_WRITE_MACRO    mbedtls_nv_seed_write
+#define MBEDTLS_ENTROPY_NV_SEED_CFSTORE_KEY     "NV_SEED"
+
+#endif /* CFSTORE_STORAGE_DISABLE) && * CFSTORE_STORAGE_DISABLE != 0 &&
+        * CFSTORE_CONFIG_BACKEND_FLASH_ENABLED
+        */
+
+#endif /* DEVICE_STORAGE */

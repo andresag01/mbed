@@ -33,7 +33,8 @@
  * Only use features that do not require an entropy source when
  * DEVICE_ENTROPY_SOURCE is not defined in mbed OS.
  */
-#if !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && !defined(MBEDTLS_TEST_NULL_ENTROPY)
+#if !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && \
+    !defined(MBEDTLS_TEST_NULL_ENTROPY) && !defined(MBEDTLS_ENTROPY_NV_SEED)
 #include "mbedtls/config-no-entropy.h"
 
 #if defined(MBEDTLS_USER_CONFIG_FILE)
@@ -2612,5 +2613,21 @@
 
 #include "check_config.h"
 
-#endif /* !MBEDTLS_ENTROPY_HARDWARE_ALT && !MBEDTLS_TEST_NULL_ENTROPY */
+#endif /* !MBEDTLS_ENTROPY_HARDWARE_ALT && !MBEDTLS_TEST_NULL_ENTROPY &&
+        * !MBEDTLS_ENTROPY_NV_SEED
+        */
+
+#if defined(MBEDTLS_SSL_TLS_C) && !defined(MBEDTLS_ENTROPY_C)
+#error "MBEDTLS_ENTROPY_C must be defined when using TLS"
+#endif /* MBEDTLS_SSL_TLS_C && !MBEDTLS_ENTROPY_C */
+
+#if defined(MBEDTLS_SSL_TLS_C) && !defined(MBEDTLS_ENTROPY_NV_SEED) && \
+    !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && \
+    !defined(MBEDTLS_TEST_NULL_ENTROPY)
+#error "No entropy source was found at build time, so TLS " \
+    "functionality is not available"
+#endif /* MBEDTLS_SSL_TLS_C && !MBEDTLS_ENTROPY_NV_SEED &&
+        * !MBEDTLS_ENTROPY_HARDWARE_ALT && !MBEDTLS_TEST_NULL_ENTROPY
+        */
+
 #endif /* MBEDTLS_CONFIG_H */
